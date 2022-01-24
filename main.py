@@ -106,9 +106,7 @@ if __name__ == '__main__':
                 cur.rot(move[i][0])
                 screen.fill(pygame.Color("white"))
                 screen.blit(cur.image, cur.rect)
-                print(cur.velocity)
                 cur.velocity = Vector2(0, 0).rotate(cur.angle - 90)
-                print(cur.velocity)
             if dir[0] != 0 or dir[1] != 0:
                 cur.pos += dir  # Add velocity to pos to move the sprite.
                 cur.rect.center = cur.pos  # Update rect coords.
