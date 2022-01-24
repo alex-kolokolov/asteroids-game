@@ -3,12 +3,12 @@ import sys
 import pygame
 import math
 from pygame.math import Vector2
+
 # Изображение не получится загрузить
 # без предварительной инициализации pygame
 pygame.init()
 size = width, height = 1300, 1300
 screen = pygame.display.set_mode(size)
-
 
 
 def load_image(name, colorkey=None):
@@ -33,8 +33,8 @@ class Chacter(pygame.sprite.Sprite):
         self.rect.centery = 100
         self.angle = 0
         offset = Vector2(40, 0).rotate(self.angle)
-        self.accel = Vector2(0.00001, 0).rotate(self.angle-90)
-        self.op_accel = Vector2(-0.002, 0).rotate(self.angle-90)
+        self.accel = Vector2(0.00001, 0).rotate(self.angle - 90)
+        self.op_accel = Vector2(-0.002, 0).rotate(self.angle - 90)
 
         self.pos = Vector2(self.rect.centerx, self.rect.centery) + offset
         print(self.angle, (self.angle - 90) % 360)
@@ -69,6 +69,8 @@ class Chacter(pygame.sprite.Sprite):
         if args[0] == pygame.K_LEFT:
             self.image = pygame.transform.rotate(self.image, math.pi / 36)
             self.rect = self.image.get_rect(center=self.image.get_rect(center=(self.rect.x, self.rect.y)).center)
+
+
 v = 1
 move = {pygame.K_LEFT: (+1.25, 0),
         pygame.K_RIGHT: (-1.25, 0),
@@ -87,13 +89,13 @@ if __name__ == '__main__':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
-#            if event.type == pygame.KEYDOWN:
-#                 v = event.type
-#                 all_spr.update(event.key)
+        #            if event.type == pygame.KEYDOWN:
+        #                 v = event.type
+        #                 all_spr.update(event.key)
         for i in move:
 
             if pygame.key.get_pressed()[i] and (i == pygame.K_DOWN or i == pygame.K_UP):
-                #print(cur.angle)
+                # print(cur.angle)
 
                 dir += cur.accel
                 print(cur.velocity)
