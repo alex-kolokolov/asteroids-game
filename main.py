@@ -6,7 +6,7 @@ from pygame.math import Vector2
 # Изображение не получится загрузить
 # без предварительной инициализации pygame
 pygame.init()
-size = width, height = 1300, 1300
+size = width, height = 800, 600
 screen = pygame.display.set_mode(size)
 
 
