@@ -3,7 +3,7 @@ import sys
 import pygame
 import math
 from pygame.math import Vector2
-from asteroid import Bomb, all_sprites
+from asteroid import Asteroid, asteroids
 import random
 
 # Изображение не получится загрузить
@@ -103,5 +103,7 @@ class Bullet(pygame.sprite.Sprite):
         self.pos += Vector2(10, 0).rotate(360 - self.angle - 90)
         self.rect.center = self.pos
         if -100 < self.pos[0] > width + 100 or -100 < self.pos[1] > height + 100:
+            self.kill()
+        if pygame.sprite.spritecollideany(self, asteroids):
             self.kill()
         return 0
