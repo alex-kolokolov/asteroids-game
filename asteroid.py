@@ -10,7 +10,7 @@ size = width, height = 800, 600
 screen = pygame.display.set_mode(size)
 
 
-def load_image(name, colorkey=None):
+def load_image_1(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
     if not os.path.isfile(fullname):
@@ -18,25 +18,28 @@ def load_image(name, colorkey=None):
         sys.exit()
     image = pygame.image.load(fullname)
     colorkey = image.get_at((0, 0))
-    image.set_colorkey(colorkey)
+    image.set_colorkey(
+        colorkey)
     return image
 
 
-class Bomb(pygame.sprite.Sprite):
-    image = load_image("asteroid.png")
+class Asteroid(pygame.sprite.Sprite):
+    image = load_image_1("asteroid.png")
+    image_1 = load_image_1("asteroid_1.png")
 
     def __init__(self, *group):
         # НЕОБХОДИМО вызвать конструктор родительского класса Sprite.
         # Это очень важно!!!
         super().__init__(*group)
-        self.image = Bomb.image
+        self.size = 0
+        self.image = Asteroid.image
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = random.randrange(60, width - 100)
         self.rect.y = random.randrange(61, height - 100)
-        self.vx = random.randint(-5, 5)
-        self.vy = random.randrange(-5, 5)
-        while pygame.sprite.spritecollideany(self, all_sprites) != self:
+        self.vx = random.randint(-3, 3)
+        self.vy = random.randrange(-3, 3)
+        while pygame.sprite.spritecollideany(self, asteroids) != self:
             self.rect.x = random.randrange(60, width - 100)
             self.rect.y = random.randrange(61, height - 100)
 
@@ -50,12 +53,18 @@ class Bomb(pygame.sprite.Sprite):
             self.rect[0] = 800
         if self.rect[1] < 0:
             self.rect[1] = 600
+        if self.size == 0:
+            if pygame.sprite.spritecollideany(self, bullets):
+                self.image = Asteroid.image_1
+                self.size = 1
+        else:
+            if pygame.sprite.spritecollideany(self, bullets):
+                self.kill()
 
 
-
-all_sprites = pygame.sprite.Group()
+asteroids = pygame.sprite.Group()
 for i in range(10):
-    Bomb(all_sprites)
+    Asteroid(asteroids)
 
 if __name__ == '__main__':
     running = True
@@ -68,8 +77,8 @@ if __name__ == '__main__':
             #     v = event.type
             #     all_spr.update(event.key
         screen.fill((255, 255, 255))
-        all_sprites.draw(screen)
-        all_sprites.update()
+        asteroids.draw(screen)
+        asteroids.update()
         pygame.display.flip()
         clock.tick(100)
     pygame.quit()
