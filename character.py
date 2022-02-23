@@ -120,5 +120,6 @@ class Bullet(pygame.sprite.Sprite):
         self.rect.center = self.pos
         if -100 < self.pos[0] > width + 100 or -100 < self.pos[1] > height + 100:
             self.kill()
-
+        if pygame.sprite.spritecollideany(self, asteroids):
+            self.kill()
         return 0
