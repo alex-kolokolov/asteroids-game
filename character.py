@@ -27,6 +27,7 @@ def load_image(name, colorkey=None):
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, *group):
+        self.bg = load_image("fon.jpg")
         self.image_1 = load_image("boom.png")
         super().__init__(*group)
         self.source = pygame.transform.scale(load_image("ship.png"), (200, 200))
@@ -68,7 +69,7 @@ class Character(pygame.sprite.Sprite):
                 self.dir += self.accel * self.k
                 #      print(self.velocity)
                 screen.fill(pygame.Color("white"))
-                screen.blit(self.image, self.rect)
+                screen.blit(self.bg, (0, 0))
                 if self.dir.length() > 2.6:
                     self.dir.scale_to_length(1.6)
 
@@ -76,7 +77,7 @@ class Character(pygame.sprite.Sprite):
                 self.rot(self.move[i][0])
                 self.k = 0.3
                 screen.fill(pygame.Color("white"))
-                screen.blit(self.image, self.rect)
+                screen.blit(self.bg, (0, 0))
             #     print(self.velocity)
         if self.dir[0] != 0 or self.dir[1] != 0:
             self.pos += self.dir  # Add velocity to pos to move the sprite.
