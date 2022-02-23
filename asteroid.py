@@ -2,6 +2,8 @@ import os
 import sys
 import random
 import pygame
+from sprite_groups import asteroids, all_spr, bullets
+import character
 
 # Изображение не получится загрузить
 # без предварительной инициализации pygame
@@ -25,7 +27,8 @@ def load_image_1(name, colorkey=None):
 
 class Asteroid(pygame.sprite.Sprite):
     image = load_image_1("asteroid.png")
-    image_1 = load_image_1("asteroid_1.png")
+    image_1 = load_image_1("boom.png")
+
 
     def __init__(self, *group):
         # НЕОБХОДИМО вызвать конструктор родительского класса Sprite.
@@ -39,9 +42,11 @@ class Asteroid(pygame.sprite.Sprite):
         self.rect.y = random.randrange(61, height - 100)
         self.vx = random.randint(-3, 3)
         self.vy = random.randrange(-3, 3)
+        self.time = None
         while pygame.sprite.spritecollideany(self, asteroids) != self:
             self.rect.x = random.randrange(60, width - 100)
             self.rect.y = random.randrange(61, height - 100)
+
 
     def update(self):
         self.rect = self.rect.move(self.vx, self.vy)
@@ -55,20 +60,28 @@ class Asteroid(pygame.sprite.Sprite):
             self.rect[1] = 600
         if self.size == 0:
             if pygame.sprite.spritecollideany(self, bullets):
-                self.image = Asteroid.image_1
+                pygame.sprite.spritecollideany(self, bullets).kill()
                 self.size = 1
         else:
             if pygame.sprite.spritecollideany(self, bullets):
+                pygame.sprite.spritecollideany(self, bullets).kill()
+                self.image = Asteroid.image_1
+                self.time = pygame.time.get_ticks()
+                self.vx = 0
+                self.vy = 0
+
+        if self.time is not None:  # If the timer has been started...
+            # and 500 ms have elapsed, kill the sprite.
+            if pygame.time.get_ticks() - self.time >= 500:
                 self.kill()
 
-
-asteroids = pygame.sprite.Group()
-for i in range(10):
-    Asteroid(asteroids)
 
 if __name__ == '__main__':
     running = True
     clock = pygame.time.Clock()
+    character.Character(all_spr)
+    for i in range(10):
+        Asteroid(asteroids)
     while running:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -77,6 +90,8 @@ if __name__ == '__main__':
             #     v = event.type
             #     all_spr.update(event.key
         screen.fill((255, 255, 255))
+        all_spr.draw(screen)
+        all_spr.update()
         asteroids.draw(screen)
         asteroids.update()
         pygame.display.flip()

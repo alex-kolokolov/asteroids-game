@@ -3,7 +3,7 @@ import sys
 import pygame
 import math
 from pygame.math import Vector2
-from asteroid import Asteroid, asteroids
+from sprite_groups import asteroids, all_spr, bullets
 import random
 
 # Изображение не получится загрузить
@@ -25,8 +25,9 @@ def load_image(name, colorkey=None):
     return image
 
 
-class Chacter(pygame.sprite.Sprite):
+class Character(pygame.sprite.Sprite):
     def __init__(self, *group):
+        self.image_1 = load_image("boom.png")
         super().__init__(*group)
         self.source = pygame.transform.scale(load_image("ship.png"), (200, 200))
         self.mask = pygame.mask.from_surface(self.source)
@@ -34,8 +35,8 @@ class Chacter(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.centerx = 200
         self.rect.centery = 200
-        self.rect.centerx = 200
-        self.rect.centery = 200
+        self.time = None
+        self.size = 0
         self.angle = 0
         offset = Vector2(40, 0).rotate(self.angle)
         self.accel = Vector2(0.1, 0).rotate(self.angle - 90)
@@ -83,10 +84,24 @@ class Chacter(pygame.sprite.Sprite):
             self.dir -= self.dir * 0.00000005
         else:
             dir = [0, 0]
+        if self.size == 0 or self.size == 1:
+            if pygame.sprite.spritecollideany(self, asteroids):
+                pygame.sprite.spritecollideany(self, asteroids).kill()
+                self.size += 1
 
+        else:
+            if pygame.sprite.spritecollideany(self, asteroids):
+                pygame.sprite.spritecollideany(self, asteroids).kill()
+                self.image = self.image_1
+                self.time = pygame.time.get_ticks()
+        if self.time is not None:  # If the timer has been started...
+            # and 500 ms have elapsed, kill the sprite.
+            if pygame.time.get_ticks() - self.time >= 500:
+                self.kill()
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, *group, x, y, angle):
+        self.image_1 = load_image("boom.png")
         super().__init__(*group)
         self.source = pygame.transform.scale(load_image("bullet.png"), (25, 10))
         self.image = pygame.transform.scale(self.source, (25, 10))
@@ -99,11 +114,11 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.source, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
 
+
     def update(self):
         self.pos += Vector2(10, 0).rotate(360 - self.angle - 90)
         self.rect.center = self.pos
         if -100 < self.pos[0] > width + 100 or -100 < self.pos[1] > height + 100:
             self.kill()
-        if pygame.sprite.spritecollideany(self, asteroids):
-            self.kill()
+
         return 0
