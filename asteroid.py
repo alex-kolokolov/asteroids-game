@@ -4,6 +4,7 @@ import random
 import pygame
 from sprite_groups import asteroids, all_spr, bullets
 import character
+from explosion import Explosion
 
 # Изображение не получится загрузить
 # без предварительной инициализации pygame
@@ -42,7 +43,6 @@ class Asteroid(pygame.sprite.Sprite):
         self.rect.y = random.randrange(61, height - 100)
         self.vx = random.randint(-3, 3)
         self.vy = random.randrange(-3, 3)
-        self.time = None
         while pygame.sprite.spritecollideany(self, asteroids) != self:
             self.rect.x = random.randrange(60, width - 100)
             self.rect.y = random.randrange(61, height - 100)
@@ -65,16 +65,8 @@ class Asteroid(pygame.sprite.Sprite):
         else:
             if pygame.sprite.spritecollideany(self, bullets):
                 pygame.sprite.spritecollideany(self, bullets).kill()
-                self.image = Asteroid.image_1
-                self.time = pygame.time.get_ticks()
-                self.vx = 0
-                self.vy = 0
-
-        if self.time is not None:  # If the timer has been started...
-            # and 500 ms have elapsed, kill the sprite.
-            if pygame.time.get_ticks() - self.time >= 500:
+                self.exp = Explosion(all_spr, size=(140, 140), coords=(self.rect.centerx, self.rect.centery))
                 self.kill()
-
 
 if __name__ == '__main__':
     running = True

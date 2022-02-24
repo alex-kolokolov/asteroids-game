@@ -51,7 +51,6 @@ if __name__ == '__main__':
             bul = Bullet(bullets, x=self.rect.center[0], y=self.rect.center[1], angle=self.angle)
             shoot_delay = 0
         screen.fill([255, 255, 255])
-        screen.blit(bg, (0, 0))
         all_spr.update()
         all_spr.draw(screen)
 

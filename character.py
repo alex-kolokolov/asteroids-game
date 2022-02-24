@@ -5,6 +5,7 @@ import math
 from pygame.math import Vector2
 from sprite_groups import asteroids, all_spr, bullets
 import random
+from explosion import Explosion
 
 # Изображение не получится загрузить
 # без предварительной инициализации pygame
@@ -30,15 +31,18 @@ class Character(pygame.sprite.Sprite):
         self.bg = load_image("fon.jpg")
         self.image_1 = load_image("boom.png")
         super().__init__(*group)
-        self.source = pygame.transform.scale(load_image("ship.png"), (200, 200))
+        self.source = pygame.transform.scale(load_image("ship.png"), (140, 140))
         self.mask = pygame.mask.from_surface(self.source)
-        self.image = pygame.transform.scale(self.source, (200, 200))
+        self.image = pygame.transform.scale(self.source, (140, 140))
         self.rect = self.image.get_rect()
         self.rect.centerx = 200
         self.rect.centery = 200
         self.time = None
+        self.time_1 = None
+
         self.size = 0
         self.angle = 0
+        self.alpha = 255
         offset = Vector2(40, 0).rotate(self.angle)
         self.accel = Vector2(0.1, 0).rotate(self.angle - 90)
         self.dir = Vector2(0, 0)
@@ -68,16 +72,12 @@ class Character(pygame.sprite.Sprite):
 
                 self.dir += self.accel * self.k
                 #      print(self.velocity)
-                screen.fill(pygame.Color("white"))
-                screen.blit(self.bg, (0, 0))
                 if self.dir.length() > 2.6:
                     self.dir.scale_to_length(1.6)
 
             elif pygame.key.get_pressed()[i] and (i == pygame.K_LEFT or i == pygame.K_RIGHT):
                 self.rot(self.move[i][0])
                 self.k = 0.3
-                screen.fill(pygame.Color("white"))
-                screen.blit(self.bg, (0, 0))
             #     print(self.velocity)
         if self.dir[0] != 0 or self.dir[1] != 0:
             self.pos += self.dir  # Add velocity to pos to move the sprite.
@@ -85,20 +85,29 @@ class Character(pygame.sprite.Sprite):
             self.dir -= self.dir * 0.00000005
         else:
             dir = [0, 0]
-        if self.size == 0 or self.size == 1:
-            if pygame.sprite.spritecollideany(self, asteroids):
-                pygame.sprite.spritecollideany(self, asteroids).kill()
-                self.size += 1
+        if self.time_1 is None:
+            if self.size == 0 or self.size == 1:
+                if pygame.sprite.spritecollideany(self, asteroids):
+                    pygame.sprite.spritecollideany(self, asteroids).kill()
 
-        else:
-            if pygame.sprite.spritecollideany(self, asteroids):
-                pygame.sprite.spritecollideany(self, asteroids).kill()
-                self.image = self.image_1
-                self.time = pygame.time.get_ticks()
-        if self.time is not None:  # If the timer has been started...
+                    self.size += 1
+                    self.time_1 = pygame.time.get_ticks()
+                    self.time_2 = pygame.time.get_ticks()
+            else:
+                if pygame.sprite.spritecollideany(self, asteroids):
+                    pygame.sprite.spritecollideany(self, asteroids).kill()
+                    pygame.transform.scale(self.image_1, (150, 150))
+                    self.exp = Explosion(all_spr, size=(140, 140), coords=(self.rect.centerx, self.rect.centery))
+                    self.kill()
+        else:  # If the timer has been started...
             # and 500 ms have elapsed, kill the sprite.
-            if pygame.time.get_ticks() - self.time >= 500:
-                self.kill()
+            self.image.set_alpha(100)
+            print(123)
+            if pygame.time.get_ticks() - self.time_1 >= 2500:
+                self.time_1 = None
+                self.image.set_alpha(255)
+        print(pygame.time.get_ticks())
+
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, *group, x, y, angle):
@@ -115,12 +124,9 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.transform.rotate(self.source, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
 
-
     def update(self):
         self.pos += Vector2(10, 0).rotate(360 - self.angle - 90)
         self.rect.center = self.pos
         if -100 < self.pos[0] > width + 100 or -100 < self.pos[1] > height + 100:
-            self.kill()
-        if pygame.sprite.spritecollideany(self, asteroids):
             self.kill()
         return 0
