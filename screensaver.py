@@ -1,4 +1,23 @@
+import pygame
+import sys
+import os
+
 FPS = 50
+pygame.init()
+size = width, height = 800, 600
+screen = pygame.display.set_mode(size)
+clock = pygame.time.Clock()
+
+
+def load_image_fon(name, colorkey=None):
+    fullname = os.path.join('data', name)
+    # если файл не существует, то выходим
+    if not os.path.isfile(fullname):
+        print(f"Файл с изображением '{fullname}' не найден")
+        sys.exit()
+    image = pygame.image.load(fullname)
+    return image
+
 
 def terminate():
     pygame.quit()

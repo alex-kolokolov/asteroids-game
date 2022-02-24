@@ -5,6 +5,7 @@ import math
 from pygame.math import Vector2
 from asteroid import Asteroid
 import random
+from screensaver import start_screen, terminate
 from character import Character, Bullet
 from sprite_groups import asteroids, all_spr, bullets
 
@@ -32,7 +33,8 @@ screen = pygame.display.set_mode(size)
 
 clock = pygame.time.Clock()
 if __name__ == '__main__':
-    for i in range(3):
+    start_screen()
+    for i in range(10):
         Asteroid(asteroids)
     running = True
     asteroid_delay = 0

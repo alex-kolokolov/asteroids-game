@@ -5,6 +5,7 @@ import math
 from pygame.math import Vector2
 from sprite_groups import asteroids, all_spr, bullets
 import random
+import screensaver
 from explosion import Explosion
 
 # Изображение не получится загрузить

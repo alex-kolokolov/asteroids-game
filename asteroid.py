@@ -4,6 +4,7 @@ import random
 import pygame
 from sprite_groups import asteroids, all_spr, bullets
 import character
+import screensaver
 from explosion import Explosion
 
 # Изображение не получится загрузить
