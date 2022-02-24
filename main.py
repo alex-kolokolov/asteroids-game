@@ -34,8 +34,7 @@ screen = pygame.display.set_mode(size)
 clock = pygame.time.Clock()
 if __name__ == '__main__':
     start_screen()
-    for i in range(10):
-        Asteroid(asteroids)
+    n = 10
     running = True
     asteroid_delay = 0
     self = Character(all_spr)
@@ -45,6 +44,10 @@ if __name__ == '__main__':
         screen.fill([255, 255, 255])
         screen.blit(bg, (0, 0))
         shoot_delay += 1
+        if n - len(asteroids) > 0:
+            for i in range(n - len(asteroids)):
+                Asteroid(asteroids)
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
