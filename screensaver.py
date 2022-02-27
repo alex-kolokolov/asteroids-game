@@ -78,8 +78,7 @@ def stop_screen():
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 terminate()
-            elif event.type == pygame.KEYDOWN or \
-                    event.type == pygame.MOUSEBUTTONDOWN:
-                return  # начинаем игру
+            elif event.type == pygame.K_TAB:
+                return  # заканчиваем игру
         pygame.display.flip()
         clock.tick(FPS)
