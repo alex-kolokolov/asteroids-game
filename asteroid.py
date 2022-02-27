@@ -2,7 +2,7 @@ import os
 import sys
 import random
 import pygame
-from sprite_groups import asteroids, all_spr, bullets, resolution
+from sprite_groups import asteroids, all_spr, bullets, resolution, score
 import character
 import screensaver
 from explosion import Explosion
@@ -12,7 +12,6 @@ from explosion import Explosion
 pygame.init()
 resolution = width, height = resolution
 screen = pygame.display.set_mode(resolution)
-
 
 def load_image_1(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -28,46 +27,61 @@ def load_image_1(name, colorkey=None):
 
 
 class Asteroid(pygame.sprite.Sprite):
-    image = load_image_1("asteroid.png")
-    image_1 = load_image_1("boom.png")
 
-
-    def __init__(self, *group):
+    def __init__(self, *group, phase=0, x=random.randrange(60, width - 100),
+                 y=random.randrange(61, height - 100)):
         # НЕОБХОДИМО вызвать конструктор родительского класса Sprite.
         # Это очень важно!!!
         super().__init__(*group)
-        self.size = 0
-        self.image = Asteroid.image
+        self.size = [(80, 80), (60, 60), (40, 40)]
+        self.phase = phase
+        self.size = self.size[self.phase]
+        self.image = pygame.transform.scale(load_image_1("asteroid.png"), self.size)
+        self.image_1 = load_image_1("boom.png")
+        self.image = self.image
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
-        self.rect.x = random.randrange(60, width - 100)
-        self.rect.y = random.randrange(61, height - 100)
-        self.vx = random.randint(-3, 3)
-        self.vy = random.randrange(-3, 3)
-        while pygame.sprite.spritecollideany(self, asteroids) != self:
-            self.rect.x = random.randrange(60, width - 100)
-            self.rect.y = random.randrange(61, height - 100)
-
+        self.rect.x = x
+        self.rect.y = y
+        self.vx = random.choice([-1, 1])
+        self.vy = random.choice([-1, 1])
+        if self.phase == 0:
+            while pygame.sprite.spritecollideany(self, asteroids) != self and \
+                    pygame.sprite.spritecollideany(self, all_spr) != self:
+                self.rect.x, self.rect.y = random.choice([(random.choice([60, width - 100]),
+                                                           random.randrange(61, height - 100)),
+                                                          (random.randrange(61, height - 100),
+                                                           random.choice([60, width - 100]))])
 
     def update(self):
         self.rect = self.rect.move(self.vx, self.vy)
         if self.rect[1] > height:
             self.rect[1] = 0
+            self.rect[0] -= random.randrange(-20, 20)
         if self.rect[0] > width:
             self.rect[0] = 0
+            self.rect[1] -= random.randrange(-20, 20)
         if self.rect[0] < 0:
             self.rect[0] = width
+            self.rect[1] -= random.randrange(-20, 20)
         if self.rect[1] < 0:
             self.rect[1] = height
-        if self.size == 0:
+            self.rect[0] -= random.randrange(-20, 20)
+        if self.phase < 2:
             if pygame.sprite.spritecollideany(self, bullets):
                 pygame.sprite.spritecollideany(self, bullets).kill()
-                self.size = 1
+                score.append(50)
+                Asteroid(asteroids, phase=self.phase + 1, x=self.rect.x, y=self.rect.y)
+                Asteroid(asteroids, phase=self.phase + 1, x=self.rect.centerx, y=self.rect.centery)
+                self.kill()
+
         else:
             if pygame.sprite.spritecollideany(self, bullets):
+                score.append(50)
                 pygame.sprite.spritecollideany(self, bullets).kill()
-                self.exp = Explosion(all_spr, size=(140, 140), coords=(self.rect.centerx, self.rect.centery))
+                Explosion(all_spr, size=(140, 140), coords=(self.rect.centerx, self.rect.centery))
                 self.kill()
+
 
 if __name__ == '__main__':
     running = True

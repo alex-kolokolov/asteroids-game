@@ -3,7 +3,7 @@ import sys
 import pygame
 import math
 from pygame.math import Vector2
-from sprite_groups import asteroids, all_spr, resolution
+from sprite_groups import asteroids, all_spr, resolution, score
 import random
 import screensaver
 from explosion import Explosion
@@ -35,14 +35,14 @@ class Character(pygame.sprite.Sprite):
         self.mask = pygame.mask.from_surface(self.source)
         self.image = pygame.transform.scale(self.source, (100, 100))
         self.rect = self.image.get_rect()
-        self.rect.centerx = 200
-        self.rect.centery = 200
         self.time = None
         self.time_1 = None
         self.is_hero_in_cd = False
         self.size = 0
         self.angle = 0
         self.alpha = 255
+        self.rect.centerx = width // 2
+        self.rect.centery = height // 2
         offset = Vector2(40, 0).rotate(self.angle)
         self.accel = Vector2(0.01, 0).rotate(self.angle - 90)
         self.dir = Vector2(0, 0)
@@ -54,16 +54,15 @@ class Character(pygame.sprite.Sprite):
                      pygame.K_DOWN: (0, +1),
                      pygame.K_SPACE: (+1, 0),
                      pygame.K_e: (+1, 0)}
-        # print(self.angle, (self.angle - 90) % 360)
 
     def rot(self, a):
         self.angle = (self.angle + a) % 360
         self.image = pygame.transform.rotate(self.source, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
         self.accel = Vector2(0.01, 0).rotate(360 - self.angle - 90)
-        # print(self.angle, (360 - self.angle - 90)
 
     def update(self):
+        self.score = 0
         if self.pos[1] > height:
             self.pos[1] = 0
         if self.pos[0] > width:
@@ -75,10 +74,8 @@ class Character(pygame.sprite.Sprite):
         for i in self.move:
 
             if pygame.key.get_pressed()[pygame.K_DOWN] or pygame.key.get_pressed()[pygame.K_UP]:
-                # print(self.angle)
 
                 self.dir += self.accel
-                #      print(self.velocity)
                 if self.dir.length() > 2.0:
                     self.dir.scale_to_length(2.0)
             if pygame.key.get_pressed()[pygame.K_e]:
@@ -89,7 +86,6 @@ class Character(pygame.sprite.Sprite):
             if pygame.key.get_pressed()[pygame.K_RIGHT]:
                 self.rot(self.move[pygame.K_RIGHT][0])
 
-            #     print(self.velocity)
         if self.dir[0] != 0 or self.dir[1] != 0:
             self.pos += self.dir  # Add velocity to pos to move the sprite.
             self.rect.center = self.pos  # Update rect coords.
@@ -100,27 +96,31 @@ class Character(pygame.sprite.Sprite):
             if self.size == 0 or self.size == 1:
                 if pygame.sprite.spritecollideany(self, asteroids):
                     pygame.sprite.spritecollideany(self, asteroids).kill()
-
+                    score.append(50)
                     self.size += 1
                     self.time_1 = pygame.time.get_ticks()
                     self.time_2 = pygame.time.get_ticks()
                     self.is_hero_in_cd = True
+                    self.rect.centerx = width // 2
+                    self.rect.centery = height // 2
+                    self.pos = (width // 2, height // 2)
+                    self.rot(-self.angle)
+                    self.dir = Vector2(0, 0)
             else:
                 if pygame.sprite.spritecollideany(self, asteroids):
                     pygame.sprite.spritecollideany(self, asteroids).kill()
                     pygame.transform.scale(self.image_1, (150, 150))
+                    score.append(50)
                     self.exp = Explosion(all_spr, size=(140, 140), coords=(self.rect.centerx, self.rect.centery))
                     self.kill()
         else:  # If the timer has been started...
             # and 500 ms have elapsed, kill the sprite.
             self.image.set_alpha(100)
-            print(123)
             if pygame.time.get_ticks() - self.time_1 >= 2500 and \
                     pygame.sprite.spritecollideany(self, asteroids) is None:
                 self.time_1 = None
                 self.image.set_alpha(255)
                 self.is_hero_in_cd = False
-        print(pygame.time.get_ticks())
 
 
 class Bullet(pygame.sprite.Sprite):
@@ -137,6 +137,7 @@ class Bullet(pygame.sprite.Sprite):
         self.pos = Vector2(self.rect.centerx, self.rect.centery) + offset
         self.image = pygame.transform.rotate(self.source, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
+
 
     def update(self):
         self.pos += Vector2(10, 0).rotate(360 - self.angle - 90)
