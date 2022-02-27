@@ -82,5 +82,4 @@ if __name__ == '__main__':
         screen.blit(text, (text_x, text_y))
         pygame.display.flip()
         clock.tick(100)
-
     pygame.quit()

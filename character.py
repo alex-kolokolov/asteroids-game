@@ -5,7 +5,7 @@ import math
 from pygame.math import Vector2
 from sprite_groups import asteroids, all_spr, resolution, score
 import random
-import screensaver
+from screensaver import stop_screen, terminate
 from explosion import Explosion
 
 # Изображение не получится загрузить
@@ -113,6 +113,8 @@ class Character(pygame.sprite.Sprite):
                     score.append(50)
                     self.exp = Explosion(all_spr, size=(140, 140), coords=(self.rect.centerx, self.rect.centery))
                     self.kill()
+                    stop_screen()
+                    terminate()
         else:  # If the timer has been started...
             # and 500 ms have elapsed, kill the sprite.
             self.image.set_alpha(100)
