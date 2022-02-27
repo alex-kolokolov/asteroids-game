@@ -7,7 +7,7 @@ from asteroid import Asteroid
 import random
 from screensaver import start_screen, terminate
 from character import Character, Bullet
-from sprite_groups import asteroids, all_spr, bullets, resolution, enemies, bullets_bot
+from sprite_groups import asteroids, all_spr, bullets, resolution, enemies, bullets_bot, score
 from enemy import Enemy, BulletBot
 
 # Изображение не получится загрузить
