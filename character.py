@@ -14,6 +14,7 @@ pygame.init()
 resolution = width, height = resolution
 screen = pygame.display.set_mode(resolution)
 
+
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
     # если файл не существует, то выходим
@@ -78,7 +79,7 @@ class Character(pygame.sprite.Sprite):
     def death(self):
         pygame.transform.scale(self.image_1, (150, 150))
         score.append(50)
-        self.exp = Explosion(all_spr, size=(140, 140), coords=(self.rect.centerx, self.rect.centery))
+        self.exp = Explosion(all_spr, coords=(self.rect.centerx, self.rect.centery))
         self.kill()
         stop_screen()
         terminate()
@@ -128,6 +129,7 @@ class Character(pygame.sprite.Sprite):
             else:
                 if pygame.sprite.spritecollideany(self, asteroids):
                     pygame.sprite.spritecollideany(self, asteroids).kill()
+                    self.death()
                 elif pygame.sprite.spritecollideany(self, bullets_bot):
                     pygame.sprite.spritecollideany(self, bullets_bot).kill()
                     self.death()
@@ -156,7 +158,6 @@ class Bullet(pygame.sprite.Sprite):
         self.pos = Vector2(self.rect.centerx, self.rect.centery) + offset
         self.image = pygame.transform.rotate(self.source, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
-
 
     def update(self):
         self.pos += Vector2(10, 0).rotate(360 - self.angle - 90)

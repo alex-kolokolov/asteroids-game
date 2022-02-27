@@ -79,7 +79,7 @@ class Asteroid(pygame.sprite.Sprite):
             if pygame.sprite.spritecollideany(self, bullets):
                 score.append(50)
                 pygame.sprite.spritecollideany(self, bullets).kill()
-                Explosion(all_spr, size=(140, 140), coords=(self.rect.centerx, self.rect.centery))
+                Explosion(all_spr, coords=(self.rect.centerx, self.rect.centery))
                 self.kill()
 
 

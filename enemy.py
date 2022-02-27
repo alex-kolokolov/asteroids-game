@@ -2,7 +2,7 @@ import os
 import sys
 import random
 import pygame
-from sprite_groups import asteroids, all_spr, bullets, enemies, bullets_bot
+from sprite_groups import asteroids, all_spr, bullets, enemies, bullets_bot, score
 import character
 from explosion import Explosion
 from character import Bullet
@@ -76,7 +76,8 @@ class Enemy(pygame.sprite.Sprite):
         else:
             if pygame.sprite.spritecollideany(self, bullets):
                 pygame.sprite.spritecollideany(self, bullets).kill()
-                self.exp = Explosion(all_spr, size=(140, 140), coords=(self.rect.centerx, self.rect.centery))
+                self.exp = Explosion(all_spr, coords=(self.rect.centerx, self.rect.centery))
+                score.append(200)
                 self.kill()
         if self.timer is None:
             self.timer = pygame.time.get_ticks()

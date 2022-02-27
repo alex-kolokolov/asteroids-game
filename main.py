@@ -7,11 +7,13 @@ from asteroid import Asteroid
 import random
 from screensaver import start_screen, terminate
 from character import Character, Bullet
-from sprite_groups import asteroids, all_spr, bullets, resolution, enemies, bullets_bot
+from sprite_groups import asteroids, all_spr, bullets, resolution, enemies, bullets_bot, score
 from enemy import Enemy, BulletBot
+
 
 # Изображение не получится загрузить
 # без предварительной инициализации pygame
+
 
 def load_image_1(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -25,33 +27,32 @@ def load_image_1(name, colorkey=None):
         colorkey)
     return image
 
+
 pygame.init()
 bg = pygame.transform.scale(load_image_1('fon.jpg'), resolution)
 width, height = resolution
 
 screen = pygame.display.set_mode(resolution)
 
-
-
-
-clock = pygame.time.Clock()
 if __name__ == '__main__':
     start_screen()
-    n = 5
     running = True
-    asteroid_delay = 0
     ch = Character(all_spr)
     clock = pygame.time.Clock()
     shoot_delay = 0
-    Enemy(enemies, ch=ch)
-    for i in range(n):
-        Asteroid(asteroids)
+    bots = []
+    level = 1
+    # Enemy(enemies, ch=ch)
+    # for i in range(5):
+    #    Asteroid(asteroids)
 
     while running:
         screen.fill([255, 255, 255])
         screen.blit(bg, (0, 0))
         shoot_delay += 1
 
+        if not bots:
+            level += 1
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -64,7 +65,6 @@ if __name__ == '__main__':
         screen.blit(bg, (0, 0))
         all_spr.update()
         all_spr.draw(screen)
-        n = len(asteroids)
 
         bullets.update()
         bullets.draw(screen)
@@ -83,7 +83,7 @@ if __name__ == '__main__':
         text_x = width - text.get_width()
         text_y = text.get_height()
         pygame.draw.rect(screen, (255, 255, 255), (text_x - 10, text_y - 10,
-                                               text_w + 20, text_h + 20), 1)
+                                                   text_w + 20, text_h + 20), 1)
         screen.blit(text, (text_x, text_y))
         pygame.display.flip()
         clock.tick(100)
