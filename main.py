@@ -32,10 +32,10 @@ width, height = resolution
 channel1 = pygame.mixer.Channel(0) # argument must be int
 channel2 = pygame.mixer.Channel(1)
 channel3 = pygame.mixer.Channel(2)
-beat1 = pygame.mixer.Sound("data/beat.ogg")
-beat2 =  pygame.mixer.Sound("data/beat-2.ogg")
-beat3 = pygame.mixer.Sound("data/beat-3.ogg")
-fight = pygame.mixer.Sound("data/saucer-lg.ogg")
+beat1 = pygame.mixer.Sound("data/music/beat.ogg")
+beat2 =  pygame.mixer.Sound("data/music/beat-2.ogg")
+beat3 = pygame.mixer.Sound("data/music/beat-3.ogg")
+fight = pygame.mixer.Sound("data/music/saucer-lg.ogg")
 screen = pygame.display.set_mode(resolution)
 icons = [load_image_1('ship_icon.png') for i in range(3)]
 channel2.set_endevent( pygame.USEREVENT+2 )
