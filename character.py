@@ -3,7 +3,7 @@ import sys
 import pygame
 import math
 from pygame.math import Vector2
-from sprite_groups import asteroids, all_spr, resolution
+from sprite_groups import asteroids, all_spr, resolution, bullets_bot
 import random
 import screensaver
 from explosion import Explosion
@@ -63,6 +63,17 @@ class Character(pygame.sprite.Sprite):
         self.accel = Vector2(0.01, 0).rotate(360 - self.angle - 90)
         # print(self.angle, (360 - self.angle - 90)
 
+    def go_cd(self):
+        self.size += 1
+        self.time_1 = pygame.time.get_ticks()
+        self.time_2 = pygame.time.get_ticks()
+        self.is_hero_in_cd = True
+
+    def death(self):
+        pygame.transform.scale(self.image_1, (150, 150))
+        self.exp = Explosion(all_spr, size=(140, 140), coords=(self.rect.centerx, self.rect.centery))
+        self.kill()
+
     def update(self):
         if self.pos[1] > height:
             self.pos[1] = 0
@@ -100,27 +111,27 @@ class Character(pygame.sprite.Sprite):
             if self.size == 0 or self.size == 1:
                 if pygame.sprite.spritecollideany(self, asteroids):
                     pygame.sprite.spritecollideany(self, asteroids).kill()
+                    self.go_cd()
+                elif pygame.sprite.spritecollideany(self, bullets_bot):
+                    pygame.sprite.spritecollideany(self, bullets_bot).kill()
+                    self.go_cd()
 
-                    self.size += 1
-                    self.time_1 = pygame.time.get_ticks()
-                    self.time_2 = pygame.time.get_ticks()
-                    self.is_hero_in_cd = True
             else:
                 if pygame.sprite.spritecollideany(self, asteroids):
                     pygame.sprite.spritecollideany(self, asteroids).kill()
-                    pygame.transform.scale(self.image_1, (150, 150))
-                    self.exp = Explosion(all_spr, size=(140, 140), coords=(self.rect.centerx, self.rect.centery))
-                    self.kill()
+                elif pygame.sprite.spritecollideany(self, bullets_bot):
+                    pygame.sprite.spritecollideany(self, bullets_bot).kill()
+                    self.death()
         else:  # If the timer has been started...
             # and 500 ms have elapsed, kill the sprite.
             self.image.set_alpha(100)
-            print(123)
             if pygame.time.get_ticks() - self.time_1 >= 2500 and \
-                    pygame.sprite.spritecollideany(self, asteroids) is None:
+                    pygame.sprite.spritecollideany(self, asteroids) is None \
+                    and pygame.sprite.spritecollideany(self, bullets_bot) is None:
                 self.time_1 = None
                 self.image.set_alpha(255)
                 self.is_hero_in_cd = False
-        print(pygame.time.get_ticks())
+         # print(pygame.time.get_ticks())
 
 
 class Bullet(pygame.sprite.Sprite):

@@ -7,7 +7,8 @@ from asteroid import Asteroid
 import random
 from screensaver import start_screen, terminate
 from character import Character, Bullet
-from sprite_groups import asteroids, all_spr, bullets, resolution
+from sprite_groups import asteroids, all_spr, bullets, resolution, enemies, bullets_bot
+from enemy import Enemy, BulletBot
 
 # Изображение не получится загрузить
 # без предварительной инициализации pygame
@@ -37,23 +38,22 @@ if __name__ == '__main__':
     n = 10
     running = True
     asteroid_delay = 0
-    self = Character(all_spr)
+    ch = Character(all_spr)
     clock = pygame.time.Clock()
     shoot_delay = 0
+    Enemy(enemies, ch=ch)
     while running:
         screen.fill([255, 255, 255])
         screen.blit(bg, (0, 0))
         shoot_delay += 1
-        if n - len(asteroids) > 0:
-            for i in range(n - len(asteroids)):
-                Asteroid(asteroids)
+
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 running = False
 
         if pygame.key.get_pressed()[pygame.K_SPACE] and shoot_delay > 45:
-            bul = Bullet(bullets, x=self.rect.center[0], y=self.rect.center[1], angle=self.angle)
+            bul = Bullet(bullets, x=ch.rect.center[0], y=ch.rect.center[1], angle=ch.angle)
             shoot_delay = 0
         screen.fill([255, 255, 255])
         screen.blit(bg, (0, 0))
@@ -62,8 +62,13 @@ if __name__ == '__main__':
 
         bullets.update()
         bullets.draw(screen)
+        bullets_bot.update()
+        bullets_bot.draw(screen)
         asteroids.update()
         asteroids.draw(screen)
+        enemies.update()
+        enemies.draw(screen)
+
         pygame.display.flip()
         clock.tick(100)
 
