@@ -1,13 +1,16 @@
 import pygame
 import sys
 import os
-from sprite_groups import resolution
+import sqlite3
+from sprite_groups import resolution, score
 
 FPS = 50
 pygame.init()
 width, height = resolution
 screen = pygame.display.set_mode(resolution)
 clock = pygame.time.Clock()
+con = sqlite3.connect("Score.sqlite")
+cur = con.cursor()
 
 
 def load_image_fon(name, colorkey=None):
@@ -79,6 +82,8 @@ def stop_screen():
             if event.type == pygame.QUIT:
                 terminate()
             elif event.type == pygame.K_TAB:
+                cur.execute(f"""INSERT INTO best_score(score) VALUES({sum(score)})""")
+                con.commit()
                 return  # заканчиваем игру
         pygame.display.flip()
         clock.tick(FPS)
