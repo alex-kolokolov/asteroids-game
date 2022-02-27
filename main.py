@@ -6,6 +6,7 @@ from screensaver import start_screen
 from character import Character, Bullet
 from sprite_groups import asteroids, all_spr, bullets, resolution, enemies, bullets_bot, score
 from enemy import Enemy, BulletBot
+from random import choice
 
 
 # Изображение не получится загрузить
@@ -24,6 +25,10 @@ def load_image_1(name, colorkey=None):
         colorkey)
     return image
 
+
+level1 = [(5, 0), (6, 0), (7, 0)]
+level2 = [(3, 1), (4, 1), (8, 0)]
+level3 = [(3, 2), (4, 2), (0, 3)]
 pygame.init()
 pygame.mixer.init()
 bg = pygame.transform.scale(load_image_1('fon.jpg'), resolution)
@@ -31,14 +36,16 @@ width, height = resolution
 channel1 = pygame.mixer.Channel(0)  # argument must be int
 channel2 = pygame.mixer.Channel(1)
 channel3 = pygame.mixer.Channel(2)
+sound1 = pygame.mixer.Sound('music/mus-level1.mp3')
+sound2 = pygame.mixer.Sound('music/mus-level2.mp3')
+sound3 = pygame.mixer.Sound('music/mus-level3.mp3')
+music = {1: sound1,
+         2: sound2,
+         3: sound3}
 fire = pygame.mixer.Sound("data/music/fire-a.mp3")
 screen = pygame.display.set_mode(resolution)
 icons = [load_image_1('ship_icon.png') for i in range(3)]
 
-prepare_sound_index = 1
-fight_sound_index = 1
-
-clock = pygame.time.Clock()
 if __name__ == '__main__':
     level = start_screen()
     running = True
@@ -46,11 +53,26 @@ if __name__ == '__main__':
     ch = Character(all_spr)
     clock = pygame.time.Clock()
     shoot_delay = 0
-    # Enemy(enemies, ch=ch)
-    # for i in range(5):
-    #    Asteroid(asteroids)
+    channel2.play(music[level], -1)
+
 
     while running:
+        if len(asteroids) + len(enemies) == 0:
+            if level == 1:
+                for i in range(choice(level1)[0]):
+                    Asteroid(asteroids)
+            elif level == 2:
+                a = choice(level2)
+                for i in range(a[0]):
+                    Asteroid(asteroids)
+                for i in range(a[1]):
+                    Enemy(enemies, ch=ch)
+            elif level == 3:
+                a = choice(level3)
+                for i in range(a[0]):
+                    Asteroid(asteroids)
+                for i in range(a[1]):
+                    Enemy(enemies, ch=ch)
         screen.fill([255, 255, 255])
         screen.blit(bg, (0, 0))
         shoot_delay += 1
