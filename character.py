@@ -121,18 +121,23 @@ class Character(pygame.sprite.Sprite):
         if self.time_1 is None and not self.is_hero_in_cd:
             if self.size == 0 or self.size == 1:
                 if pygame.sprite.spritecollideany(self, asteroids):
-                    pygame.sprite.spritecollideany(self, asteroids).kill()
-                    self.go_cd()
+                    if pygame.sprite.collide_mask(self, pygame.sprite.spritecollideany(self, asteroids)):
+                        pygame.sprite.spritecollideany(self, asteroids).kill()
+                        self.go_cd()
                 elif pygame.sprite.spritecollideany(self, bullets_bot):
-                    pygame.sprite.spritecollideany(self, bullets_bot).kill()
-                    self.go_cd()
+                    if pygame.sprite.collide_mask(self, pygame.sprite.spritecollideany(self, bullets_bot)):
+                        pygame.sprite.spritecollideany(self, bullets_bot).kill()
+                        self.go_cd()
             else:
                 if pygame.sprite.spritecollideany(self, asteroids):
+                    if pygame.sprite.collide_mask(self, pygame.sprite.spritecollideany(self, asteroids)):
+                        pygame.sprite.spritecollideany(self, asteroids).kill()
                     pygame.sprite.spritecollideany(self, asteroids).kill()
                     self.death()
                 elif pygame.sprite.spritecollideany(self, bullets_bot):
-                    pygame.sprite.spritecollideany(self, bullets_bot).kill()
-                    self.death()
+                    if pygame.sprite.collide_mask(self, pygame.sprite.spritecollideany(self, bullets_bot)):
+                        pygame.sprite.spritecollideany(self, bullets_bot).kill()
+                        self.death()
         else:  # If the timer has been started...
             # and 500 ms have elapsed, kill the sprite.
             self.image.set_alpha(100)
