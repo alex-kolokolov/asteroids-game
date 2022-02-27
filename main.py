@@ -28,20 +28,25 @@ def load_image_1(name, colorkey=None):
 pygame.init()
 bg = pygame.transform.scale(load_image_1('fon.jpg'), resolution)
 width, height = resolution
+
 screen = pygame.display.set_mode(resolution)
+
 
 
 
 clock = pygame.time.Clock()
 if __name__ == '__main__':
     start_screen()
-    n = 10
+    n = 5
     running = True
     asteroid_delay = 0
     ch = Character(all_spr)
     clock = pygame.time.Clock()
     shoot_delay = 0
     Enemy(enemies, ch=ch)
+    for i in range(n):
+        Asteroid(asteroids)
+
     while running:
         screen.fill([255, 255, 255])
         screen.blit(bg, (0, 0))
@@ -52,13 +57,14 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 running = False
 
-        if pygame.key.get_pressed()[pygame.K_SPACE] and shoot_delay > 45:
+        if len(all_spr) != 0 and pygame.key.get_pressed()[pygame.K_SPACE] and shoot_delay > 30:
             bul = Bullet(bullets, x=ch.rect.center[0], y=ch.rect.center[1], angle=ch.angle)
             shoot_delay = 0
         screen.fill([255, 255, 255])
         screen.blit(bg, (0, 0))
         all_spr.update()
         all_spr.draw(screen)
+        n = len(asteroids)
 
         bullets.update()
         bullets.draw(screen)
@@ -69,7 +75,16 @@ if __name__ == '__main__':
         enemies.update()
         enemies.draw(screen)
 
+        font = pygame.font.Font(None, 50)
+        text = font.render(f"Score: {sum(score)}", True, (255, 255, 255))
+        text_w = text.get_width()
+        text_h = text.get_height()
+
+        text_x = width - text.get_width()
+        text_y = text.get_height()
+        pygame.draw.rect(screen, (255, 255, 255), (text_x - 10, text_y - 10,
+                                               text_w + 20, text_h + 20), 1)
+        screen.blit(text, (text_x, text_y))
         pygame.display.flip()
         clock.tick(100)
-
     pygame.quit()
