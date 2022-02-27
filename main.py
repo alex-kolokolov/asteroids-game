@@ -32,17 +32,10 @@ width, height = resolution
 channel1 = pygame.mixer.Channel(0) # argument must be int
 channel2 = pygame.mixer.Channel(1)
 channel3 = pygame.mixer.Channel(2)
-beat1 = pygame.mixer.Sound("data/music/beat.ogg")
-beat2 =  pygame.mixer.Sound("data/music/beat-2.ogg")
-beat3 = pygame.mixer.Sound("data/music/beat-3.ogg")
-fight = pygame.mixer.Sound("data/music/saucer-lg.ogg")
+fire = pygame.mixer.Sound("data/music/fire-a.mp3")
 screen = pygame.display.set_mode(resolution)
 icons = [load_image_1('ship_icon.png') for i in range(3)]
-channel2.set_endevent( pygame.USEREVENT+2 )
-channel3.set_endevent( pygame.USEREVENT+1 )
-prepare_sound = [beat1 for i in range(6)] + [beat2 for i in range(6)] + [beat3 for i in range(6)]
-fight_sound = [fight for i in range(15)]
-channel3.play(prepare_sound[0])
+
 prepare_sound_index = 1
 fight_sound_index = 1
 
@@ -69,30 +62,13 @@ if __name__ == '__main__':
             print(event)
             if event.type == pygame.QUIT:
                 running = False
-            elif (event.type == pygame.USEREVENT + 1) and len(enemies) == 0:
-                # Channel2 sound ended, start the next sound!
-                prepare_sound_index += 1
-                if (prepare_sound_index < len(prepare_sound)):
-                    channel3.play(prepare_sound[prepare_sound_index])
-                    print("Sound ended")
 
-                else:
-                    prepare_sound_index = 0
-                    en = Enemy(enemies, ch=ch)
-                    channel2.play(fight_sound[0])
-            elif (event.type == pygame.USEREVENT + 2) and len(enemies) > 0:
-                # Channel2 sound ended, start the next sound!
-                prepare_sound_index += 1
-                if (prepare_sound_index < len(prepare_sound)):
-                    channel2.play(fight_sound[fight_sound_index])
-                    print("Sound ended")
 
-                else:
-                    prepare_sound_index = 0
-                    channel3.play(prepare_sound[0])
 
         if len(all_spr) != 0 and pygame.key.get_pressed()[pygame.K_SPACE] and shoot_delay > 45:
             bul = Bullet(bullets, x=ch.rect.center[0], y=ch.rect.center[1], angle=ch.angle)
+            channel1.play(fire)
+
             shoot_delay = 0
         screen.fill([255, 255, 255])
         screen.blit(bg, (0, 0))

@@ -107,6 +107,7 @@ class Character(pygame.sprite.Sprite):
                 self.dir = Vector2(0, 0)
             if pygame.key.get_pressed()[pygame.K_LEFT]:
                 self.rot(self.move[pygame.K_LEFT][0])
+
             if pygame.key.get_pressed()[pygame.K_RIGHT]:
                 self.rot(self.move[pygame.K_RIGHT][0])
 
