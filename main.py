@@ -7,7 +7,7 @@ from asteroid import Asteroid
 import random
 from screensaver import start_screen, terminate
 from character import Character, Bullet
-from sprite_groups import asteroids, all_spr, bullets
+from sprite_groups import asteroids, all_spr, bullets, resolution
 
 # Изображение не получится загрузить
 # без предварительной инициализации pygame
@@ -25,9 +25,9 @@ def load_image_1(name, colorkey=None):
     return image
 
 pygame.init()
-bg = load_image_1("fon.jpg")
-size = width, height = 800, 600
-screen = pygame.display.set_mode(size)
+bg = pygame.transform.scale(load_image_1('fon.jpg'), resolution)
+width, height = resolution
+screen = pygame.display.set_mode(resolution)
 
 
 

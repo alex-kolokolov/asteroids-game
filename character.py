@@ -3,7 +3,7 @@ import sys
 import pygame
 import math
 from pygame.math import Vector2
-from sprite_groups import asteroids, all_spr, bullets
+from sprite_groups import asteroids, all_spr, resolution
 import random
 import screensaver
 from explosion import Explosion
@@ -11,9 +11,8 @@ from explosion import Explosion
 # Изображение не получится загрузить
 # без предварительной инициализации pygame
 pygame.init()
-size = width, height = 800, 600
-screen = pygame.display.set_mode(size)
-
+resolution = width, height = resolution
+screen = pygame.display.set_mode(resolution)
 
 def load_image(name, colorkey=None):
     fullname = os.path.join('data', name)
@@ -65,14 +64,14 @@ class Character(pygame.sprite.Sprite):
         # print(self.angle, (360 - self.angle - 90)
 
     def update(self):
-        if self.pos[1] > 600:
+        if self.pos[1] > height:
             self.pos[1] = 0
-        if self.pos[0] > 800:
+        if self.pos[0] > width:
             self.pos[0] = 0
         if self.pos[0] < 0:
-            self.pos[0] = 800
+            self.pos[0] = width
         if self.pos[1] < 0:
-            self.pos[1] = 600
+            self.pos[1] = height
         for i in self.move:
 
             if pygame.key.get_pressed()[pygame.K_DOWN] or pygame.key.get_pressed()[pygame.K_UP]:

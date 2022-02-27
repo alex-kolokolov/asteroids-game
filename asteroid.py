@@ -2,7 +2,7 @@ import os
 import sys
 import random
 import pygame
-from sprite_groups import asteroids, all_spr, bullets
+from sprite_groups import asteroids, all_spr, bullets, resolution
 import character
 import screensaver
 from explosion import Explosion
@@ -10,8 +10,8 @@ from explosion import Explosion
 # Изображение не получится загрузить
 # без предварительной инициализации pygame
 pygame.init()
-size = width, height = 800, 600
-screen = pygame.display.set_mode(size)
+resolution = width, height = resolution
+screen = pygame.display.set_mode(resolution)
 
 
 def load_image_1(name, colorkey=None):
@@ -51,14 +51,14 @@ class Asteroid(pygame.sprite.Sprite):
 
     def update(self):
         self.rect = self.rect.move(self.vx, self.vy)
-        if self.rect[1] > 600:
+        if self.rect[1] > height:
             self.rect[1] = 0
-        if self.rect[0] > 800:
+        if self.rect[0] > width:
             self.rect[0] = 0
         if self.rect[0] < 0:
-            self.rect[0] = 800
+            self.rect[0] = width
         if self.rect[1] < 0:
-            self.rect[1] = 600
+            self.rect[1] = height
         if self.size == 0:
             if pygame.sprite.spritecollideany(self, bullets):
                 pygame.sprite.spritecollideany(self, bullets).kill()

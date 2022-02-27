@@ -1,11 +1,12 @@
 import pygame
 import sys
 import os
+from sprite_groups import resolution
 
 FPS = 50
 pygame.init()
-size = width, height = 800, 600
-screen = pygame.display.set_mode(size)
+width, height = resolution
+screen = pygame.display.set_mode(resolution)
 clock = pygame.time.Clock()
 
 
@@ -33,7 +34,7 @@ def start_screen():
                   "Желаем вам удачи!",
                   "Нажмите на любую кнопку"]
 
-    fon = pygame.transform.scale(load_image_fon('fon.jpg'), (800, 600))
+    fon = pygame.transform.scale(load_image_fon('fon.jpg'), resolution)
     screen.blit(fon, (0, 0))
     font = pygame.font.Font(None, 30)
     text_coord = 50
