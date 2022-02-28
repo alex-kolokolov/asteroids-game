@@ -37,7 +37,6 @@ class Asteroid(pygame.sprite.Sprite):
         self.phase = phase
         self.size = self.size[self.phase]
         self.image = pygame.transform.scale(load_image_1("asteroid.png"), self.size)
-        self.image_1 = load_image_1("boom.png")
         self.image = self.image
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
@@ -46,6 +45,10 @@ class Asteroid(pygame.sprite.Sprite):
         self.vx = random.choice([-1, 1])
         self.vy = random.choice([-1, 1])
         if self.phase == 0:
+            self.rect.x, self.rect.y = random.choice([(random.choice([60, width - 100]),
+                                                       random.randrange(61, height - 100)),
+                                                      (random.randrange(61, height - 100),
+                                                       random.choice([60, width - 100]))])
             while pygame.sprite.spritecollideany(self, asteroids) != self and \
                     pygame.sprite.spritecollideany(self, all_spr) != self:
                 self.rect.x, self.rect.y = random.choice([(random.choice([60, width - 100]),

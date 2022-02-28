@@ -91,7 +91,6 @@ class Enemy(pygame.sprite.Sprite):
 
 class BulletBot(pygame.sprite.Sprite):
     def __init__(self, *group, x, y, angle):
-        self.image_1 = load_image("boom.png")
         super().__init__(*group)
         self.source = pygame.transform.scale(load_image("bullet.png"), (25, 10))
         self.image = pygame.transform.scale(self.source, (25, 10))

@@ -14,7 +14,6 @@ def load_image_1(name, colorkey=None):
     fullname = os.path.join('anim', name)
     # если файл не существует, то выходим
     if not os.path.isfile(fullname):
-        print(f"Файл с изображением '{fullname}' не найден")
         sys.exit()
     image = pygame.image.load(fullname)
     colorkey = image.get_at((0, 0))
@@ -54,7 +53,6 @@ class Explosion(pygame.sprite.Sprite):
         random.choice([sound1, sound2, sound3]).play()
 
     def update(self):
-        print(self.shot)
         if self.timer == 0:
             self.timer = pygame.time.get_ticks()
         else:

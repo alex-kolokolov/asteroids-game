@@ -3,7 +3,7 @@ import sys
 import pygame
 import math
 from pygame.math import Vector2
-from sprite_groups import asteroids, all_spr, resolution, bullets_bot, score
+from sprite_groups import asteroids, all_spr, resolution, bullets_bot, score, lives
 import random
 from screensaver import stop_screen, terminate
 from explosion import Explosion
@@ -29,8 +29,8 @@ def load_image(name, colorkey=None):
 
 class Character(pygame.sprite.Sprite):
     def __init__(self, *group):
+        lives.append(3)
         self.bg = load_image("fon.jpg")
-        self.image_1 = load_image("boom.png")
         super().__init__(*group)
         self.source = pygame.transform.scale(load_image("ship.png"), (100, 100))
         self.mask = pygame.mask.from_surface(self.source)
@@ -55,18 +55,17 @@ class Character(pygame.sprite.Sprite):
                      pygame.K_DOWN: (0, +1),
                      pygame.K_SPACE: (+1, 0),
                      pygame.K_e: (+1, 0)}
-        # print(self.angle, (self.angle - 90) % 360)
 
     def rot(self, a):
         self.angle = (self.angle + a) % 360
         self.image = pygame.transform.rotate(self.source, self.angle)
         self.rect = self.image.get_rect(center=self.rect.center)
         self.accel = Vector2(0.01, 0).rotate(360 - self.angle - 90)
-        # print(self.angle, (360 - self.angle - 90)
 
     def go_cd(self):
         score.append(50)
         self.size += 1
+        lives.append(3 - self.size)
         self.time_1 = pygame.time.get_ticks()
         self.time_2 = pygame.time.get_ticks()
         self.is_hero_in_cd = True
@@ -77,12 +76,9 @@ class Character(pygame.sprite.Sprite):
         self.dir = Vector2(0, 0)
 
     def death(self):
-        pygame.transform.scale(self.image_1, (150, 150))
         score.append(50)
         self.exp = Explosion(all_spr, coords=(self.rect.centerx, self.rect.centery))
         self.kill()
-        stop_screen()
-        terminate()
 
     def update(self):
         self.score = 0
@@ -97,7 +93,7 @@ class Character(pygame.sprite.Sprite):
         for i in self.move:
 
             if pygame.key.get_pressed()[pygame.K_DOWN] or pygame.key.get_pressed()[pygame.K_UP]:
-                # print(self.angle)
+
 
                 self.dir += self.accel
                 #      print(self.velocity)
@@ -111,7 +107,6 @@ class Character(pygame.sprite.Sprite):
             if pygame.key.get_pressed()[pygame.K_RIGHT]:
                 self.rot(self.move[pygame.K_RIGHT][0])
 
-            #     print(self.velocity)
         if self.dir[0] != 0 or self.dir[1] != 0:
             self.pos += self.dir  # Add velocity to pos to move the sprite.
             self.rect.center = self.pos  # Update rect coords.
@@ -151,7 +146,6 @@ class Character(pygame.sprite.Sprite):
 
 class Bullet(pygame.sprite.Sprite):
     def __init__(self, *group, x, y, angle):
-        self.image_1 = load_image("boom.png")
         super().__init__(*group)
         self.source = pygame.transform.scale(load_image("bullet.png"), (25, 10))
         self.image = pygame.transform.scale(self.source, (25, 10))

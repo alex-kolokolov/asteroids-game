@@ -2,9 +2,9 @@ import os
 import sys
 import pygame
 from asteroid import Asteroid
-from screensaver import start_screen
+from screensaver import start_screen, stop_screen
 from character import Character, Bullet
-from sprite_groups import asteroids, all_spr, bullets, resolution, enemies, bullets_bot, score
+from sprite_groups import asteroids, all_spr, bullets, resolution, enemies, bullets_bot, score, lives
 from enemy import Enemy, BulletBot
 from random import choice
 
@@ -55,7 +55,6 @@ if __name__ == '__main__':
     shoot_delay = 0
     channel2.play(music[level], -1)
 
-
     while running:
         if len(asteroids) + len(enemies) == 0:
             if level == 1:
@@ -77,6 +76,23 @@ if __name__ == '__main__':
         screen.blit(bg, (0, 0))
         shoot_delay += 1
 
+        if len(all_spr) == 0:
+            channel2.stop()
+
+            level = stop_screen(level)
+            score = [0]
+            for i in asteroids:
+                i.kill()
+            for i in all_spr:
+                i.kill()
+            for i in enemies:
+                i.kill()
+            running = True
+            asteroid_delay = 0
+            ch = Character(all_spr)
+            clock = pygame.time.Clock()
+            shoot_delay = 0
+            channel2.play(music[level], -1)
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -87,6 +103,7 @@ if __name__ == '__main__':
             channel1.play(fire)
 
             shoot_delay = 0
+
         screen.fill([255, 255, 255])
         screen.blit(bg, (0, 0))
         all_spr.update()
@@ -105,19 +122,24 @@ if __name__ == '__main__':
         font = pygame.font.Font(None, 50)
         level_d = font.render(f"Уровень: {level}", True, (255, 255, 255))
         text = font.render(f"Очки: {sum(score)}", True, (255, 255, 255))
+        lives_d = font.render(f"Жизней {lives[-1]}", True, (255, 255, 255))
         text_w = text.get_width()
         text_h = text.get_height()
         level_w = level_d.get_width()
         level_h = level_d.get_height()
         text_x = width - text.get_width()
         text_y = text.get_height()
-        level_x = width // 2
+        lives_x = 0
+        lives_y = 0
+        level_x = width // 2 - level_d.get_width() // 2
         level_y = height - 60
+
         pygame.draw.rect(screen, (255, 255, 255), (text_x - 10, text_y - 10,
                                                    text_w + 20, text_h + 20), 1)
 
         screen.blit(text, (text_x, text_y))
         screen.blit(level_d, (level_x, level_y))
+        screen.blit(lives_d, (lives_x, lives_y))
         pygame.display.flip()
         clock.tick(100)
     pygame.quit()

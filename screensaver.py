@@ -74,7 +74,7 @@ def start_screen():
     btn_1 = Button((255, 255, 255), 500, 500, 250, 250, text='Начать Игру')
     btn_1.draw(screen, outline=True)
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color(0, 0, 255))
+        string_rendered = font.render(line, 1, pygame.Color(255, 0, 0))
         intro_rect = string_rendered.get_rect()
         text_coord += 10
         intro_rect.top = text_coord
@@ -137,28 +137,32 @@ def level_selector():
         clock.tick(FPS)
 
 
-def stop_screen():
-    intro_text = ["К сожалению вы не смогли выжить"]
-
-    fon = pygame.transform.scale(load_image_fon('fon.jpg'), resolution)
-    screen.blit(fon, (0, 0))
-    font = pygame.font.Font(None, 30)
-    text_coord = 300
+def stop_screen(level):
+    intro_text = ["Вы проиграли"]
+    screen.fill((0, 0, 0))
+    font = pygame.font.Font(None, 70)
+    text_coord = 200
     for line in intro_text:
-        string_rendered = font.render(line, 1, pygame.Color(18, 10, 143))
+        string_rendered = font.render(line, 1, pygame.Color(250, 0, 0))
         intro_rect = string_rendered.get_rect()
         text_coord += 10
         intro_rect.top = text_coord
-        intro_rect.x = 400
+        intro_rect.x = width // 2 - 160
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
+        btn_restart = Button((255, 255, 255), width // 2 - 125, height // 2, 250, 250, text='Вернуться в меню')
+        btn_restart.draw(screen, outline=True)
 
     while True:
         for event in pygame.event.get():
+            pos = pygame.mouse.get_pos()
             if event.type == pygame.QUIT:
                 terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if btn_restart.is_over(pos):
+                    return start_screen()
             elif event.type == pygame.K_TAB:
-                cur.execute(f"""INSERT INTO best_score(score) VALUES({sum(score)})""")
+                cur.execute(f"""INSERT INTO best_score(level, score) VALUES({sum(score)})""")
                 con.commit()
                 return  # заканчиваем игру
         pygame.display.flip()
