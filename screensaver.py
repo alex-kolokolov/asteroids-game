@@ -1,3 +1,5 @@
+import random
+
 import pygame
 import sys
 import os
@@ -9,10 +11,10 @@ pygame.init()
 width, height = resolution
 screen = pygame.display.set_mode(resolution)
 clock = pygame.time.Clock()
-con = sqlite3.connect("Score.sqlite")
-cur = con.cursor()
 
 level = None
+
+
 class Button():
     def __init__(self, color, x, y, width, height, text=''):
         self.color = color
@@ -82,7 +84,6 @@ def start_screen():
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
 
-
     while True:
         for event in pygame.event.get():
             pos = pygame.mouse.get_pos()
@@ -142,6 +143,11 @@ def stop_screen(level):
     screen.fill((0, 0, 0))
     font = pygame.font.Font(None, 70)
     text_coord = 200
+    btn_restart = Button((255, 255, 255), width // 2 - 375, height // 2, 250, 250, text='Вернуться в меню')
+    btn_restart.draw(screen, outline=True)
+    btn_records = Button((255, 255, 255), width // 2 + 125, height // 2, 250, 250, text='Талица рекордов')
+    btn_records.draw(screen, outline=True)
+
     for line in intro_text:
         string_rendered = font.render(line, 1, pygame.Color(250, 0, 0))
         intro_rect = string_rendered.get_rect()
@@ -150,8 +156,10 @@ def stop_screen(level):
         intro_rect.x = width // 2 - 160
         text_coord += intro_rect.height
         screen.blit(string_rendered, intro_rect)
-        btn_restart = Button((255, 255, 255), width // 2 - 125, height // 2, 250, 250, text='Вернуться в меню')
-        btn_restart.draw(screen, outline=True)
+    with sqlite3.connect("Score.db") as connection:
+        connection.cursor().execute(
+            f"""INSERT INTO best_score(level, score) VALUES({level}, {sum(score)})""").fetchall()
+        connection.commit()
 
     while True:
         for event in pygame.event.get():
@@ -160,10 +168,54 @@ def stop_screen(level):
                 terminate()
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if btn_restart.is_over(pos):
+                    return start_screen()  # заканчиваем игру
+                if btn_records.is_over(pos):
+                    record_table()
                     return start_screen()
-            elif event.type == pygame.K_TAB:
-                cur.execute(f"""INSERT INTO best_score(level, score) VALUES({sum(score)})""")
-                con.commit()
-                return  # заканчиваем игру
+            btn_restart.draw(screen, outline=True)
+        pygame.display.flip()
+        clock.tick(FPS)
+
+
+def record_table():
+    btn_restart = Button((255, 255, 255), width // 2 - 125, height // 2 + 100, 250, 250, text='Вернуться в меню')
+    btn_restart.draw(screen, outline=True)
+    with sqlite3.connect("Score.db") as connection:
+        text = connection.cursor().execute(f"""SELECT level, score FROM best_score ORDER BY score DESC""").fetchall()[
+               :5]
+        connection.commit()
+    intro_text = []
+    text_coord = 20
+    screen.fill((0, 0, 0))
+    font = pygame.font.Font(None, 70)
+    intro_text = ['5 Лучших Игр.', 'Уровень: Кол-во очков:']
+    for i in intro_text:
+        string_rendered = font.render(i, 1, pygame.Color(250, 0, 0))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = width // 2 - 160
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+    for line in enumerate(text, 1):
+        line = f'{str(line[0])}.' + '    ' + '                  '.join(list(map(lambda x: str(x), line[1])))
+        for i in line:
+            string_rendered = font.render(line, 1, pygame.Color(250, 0, 0))
+        intro_rect = string_rendered.get_rect()
+        text_coord += 10
+        intro_rect.top = text_coord
+        intro_rect.x = width // 2 - 245
+        text_coord += intro_rect.height
+        screen.blit(string_rendered, intro_rect)
+
+    while True:
+        for event in pygame.event.get():
+            pos = pygame.mouse.get_pos()
+            if event.type == pygame.QUIT:
+                terminate()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if btn_restart.is_over(pos):
+                    return # заканчиваем игру
+            btn_restart.draw(screen, outline=True)
         pygame.display.flip()
         clock.tick(FPS)

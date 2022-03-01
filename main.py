@@ -2,7 +2,7 @@ import os
 import sys
 import pygame
 from asteroid import Asteroid
-from screensaver import start_screen, stop_screen
+from screensaver import start_screen, stop_screen, record_table
 from character import Character, Bullet
 from sprite_groups import asteroids, all_spr, bullets, resolution, enemies, bullets_bot, score, lives
 from enemy import Enemy, BulletBot
@@ -75,12 +75,10 @@ if __name__ == '__main__':
         screen.fill([255, 255, 255])
         screen.blit(bg, (0, 0))
         shoot_delay += 1
-
         if len(all_spr) == 0:
             channel2.stop()
-
             level = stop_screen(level)
-            score = [0]
+            score.clear()
             for i in asteroids:
                 i.kill()
             for i in all_spr:
